@@ -1,0 +1,631 @@
+/* ---------- Reset & base ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --white: #ffffff;
+  --muted: rgba(255, 255, 255, 0.7);
+  --pad-x: 2.5rem;
+  --pad-y: 1.75rem;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+/* Prevent iOS Safari from auto-scaling the layout on orientation change
+   (the portrait layout would otherwise get zoomed to the landscape width
+   instead of reflowing at the new breakpoint). */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  font-family: "Oswald", "Arial Narrow", sans-serif;
+  color: var(--white);
+  background: #111;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden; /* homepage fits the viewport, no scrolling */
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* ---------- Hero (full viewport) ---------- */
+.hero {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh; /* fits mobile browser chrome when supported */
+  overflow: hidden;
+}
+
+/* Background layer.
+   On large screens the video is injected here, so we keep a plain dark colour
+   underneath (NOT the photo) to avoid a flash of the still image before the
+   video starts. The photo is used only on small screens (see media query). */
+.hero__bg {
+  position: absolute;
+  inset: 0;
+  background: #0d0d0d;
+  z-index: 0;
+}
+
+/* The injected <video> fills the same layer and fades in once it can play,
+   so it doesn't pop in over the dark background. */
+.hero__bg video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.hero__bg video.is-ready {
+  opacity: 1;
+}
+
+/* Subtle darkening so text stays legible */
+.hero__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.35) 0%,
+    rgba(0, 0, 0, 0.15) 35%,
+    rgba(0, 0, 0, 0.15) 65%,
+    rgba(0, 0, 0, 0.35) 100%
+  );
+}
+
+/* ---------- Header ---------- */
+.header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--pad-y) var(--pad-x);
+}
+
+/* Logo */
+.logo {
+  display: inline-flex;
+  align-items: center;
+}
+
+.logo img {
+  height: 80px;
+  width: auto;
+  display: block;
+  /* Recolor the black/gray logo to solid white so it stays visible
+     on the dark hero background (the PNG has a transparent background). */
+  filter: brightness(0) invert(1);
+}
+
+/* Desktop navigation — centered horizontally */
+.nav {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  gap: 2.5rem;
+}
+
+.nav__link {
+  font-weight: 400;
+  font-size: 1.25rem;
+  letter-spacing: 0.02em;
+  color: var(--white);
+  opacity: 0.92;
+  transition: opacity 0.2s ease;
+}
+
+.nav__link:hover,
+.nav__link--active {
+  opacity: 1;
+}
+
+/* Language switch (flag + code) */
+.lang-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: none;
+  color: var(--white);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0.35rem 0.5rem;
+  border-radius: 4px;
+  transition: opacity 0.2s ease;
+}
+
+.lang-switch:hover {
+  opacity: 0.8;
+}
+
+.lang-switch__flag {
+  width: 26px;
+  height: 17px;
+  display: block;
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.25);
+}
+
+.lang-switch__code {
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+/* The in-menu switch is only shown inside the mobile dropdown. */
+.lang-switch--menu {
+  display: none;
+}
+
+/* Mobile menu button — hidden on large screens */
+.menu-toggle {
+  display: none;
+  align-items: center;
+  gap: 0.85rem;
+  background: none;
+  border: none;
+  color: var(--white);
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.menu-toggle__label {
+  font-size: 1.5rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+.menu-toggle__icon {
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 34px;
+}
+
+.menu-toggle__icon span {
+  display: block;
+  height: 2px;
+  width: 100%;
+  background: var(--white);
+  border-radius: 2px;
+  transform-origin: center;
+  transition: transform 0.25s ease, opacity 0.2s ease;
+}
+
+/* ---------- Centered content ---------- */
+.hero__content {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 1.5rem;
+}
+
+.hero__title {
+  font-weight: 600;
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  letter-spacing: 0.04em;
+  line-height: 1;
+}
+
+.hero__subtitle {
+  margin-top: 1.1rem;
+  font-weight: 300;
+  font-size: clamp(1rem, 1.8vw, 1.5rem);
+  letter-spacing: 0.02em;
+  color: var(--muted);
+}
+
+.hero__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.9rem;
+  margin-top: 2rem;
+  font-size: clamp(1.15rem, 1.8vw, 1.6rem);
+  font-weight: 400;
+}
+
+.hero__cta-text {
+  border-bottom: 1px solid var(--white);
+  padding-bottom: 3px;
+  transition: opacity 0.2s ease;
+}
+
+.hero__cta:hover .hero__cta-text {
+  opacity: 0.8;
+}
+
+/* ---------- Simple background for inner pages ---------- */
+/* Projects & Contact use a plain dark background instead of the hero image. */
+body.page-contact .hero__bg,
+body.page-projects .hero__bg {
+  background: linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 100%);
+}
+
+/* ---------- Contact page ---------- */
+/* The contact page needs to scroll on short screens, unlike the homepage. */
+body.page-contact {
+  overflow-y: auto;
+}
+
+body.page-contact .hero {
+  height: auto;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* Give the form room to breathe under the fixed header. */
+body.page-contact .hero__content {
+  position: relative;
+  padding: 9rem 1.5rem 4rem;
+  justify-content: flex-start;
+}
+
+.contact {
+  width: 100%;
+  max-width: 560px;
+  text-align: center;
+}
+
+.contact__title {
+  font-weight: 600;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  letter-spacing: 0.04em;
+  line-height: 1;
+}
+
+.contact__intro {
+  margin-top: 1rem;
+  font-weight: 300;
+  font-size: clamp(1rem, 1.8vw, 1.25rem);
+  color: var(--muted);
+}
+
+.contact-form {
+  margin-top: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  text-align: left;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.field__label {
+  font-weight: 400;
+  font-size: 1.05rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.field__input {
+  font-family: inherit;
+  font-size: 1.05rem;
+  color: var(--white);
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 4px;
+  padding: 0.85rem 1rem;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.field__input::placeholder {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.field__input:focus {
+  outline: none;
+  border-color: var(--white);
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.field__input--area {
+  resize: vertical;
+  min-height: 8rem;
+}
+
+.contact-form__submit {
+  align-self: flex-start;
+  font-family: inherit;
+  font-size: 1.15rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  color: #000;
+  background: var(--white);
+  border: 1px solid var(--white);
+  border-radius: 4px;
+  padding: 0.75rem 2.25rem;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, opacity 0.2s ease;
+}
+
+.contact-form__submit:hover {
+  background: transparent;
+  color: var(--white);
+}
+
+.contact-form__submit[disabled] {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.contact-form__status {
+  min-height: 1.4em;
+  font-size: 1rem;
+  font-weight: 300;
+}
+
+.contact-form__status--ok {
+  color: #7ee0a2;
+}
+
+.contact-form__status--error {
+  color: #ff8b8b;
+}
+
+/* ---------- Projects page ---------- */
+/* Like the contact page, this one scrolls rather than locking to the viewport. */
+body.page-projects {
+  overflow-y: auto;
+}
+
+body.page-projects .hero {
+  height: auto;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+body.page-projects .hero__content {
+  position: relative;
+  padding: 9rem 2.5rem 5rem;
+  justify-content: flex-start;
+}
+
+.projects {
+  width: 100%;
+  max-width: 1200px;
+  text-align: center;
+}
+
+.projects__title {
+  font-weight: 600;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  letter-spacing: 0.04em;
+  line-height: 1;
+}
+
+.projects__intro {
+  margin-top: 1rem;
+  font-weight: 300;
+  font-size: clamp(1rem, 1.8vw, 1.25rem);
+  color: var(--muted);
+}
+
+.projects-grid {
+  margin-top: 3rem;
+  display: grid;
+  /* min(100%, 300px) lets a column shrink below 300px on narrow screens
+     instead of overflowing the viewport. */
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  gap: 2.5rem 2rem;
+  text-align: left;
+}
+
+.project {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Clickable thumbnail — 16:9 image that zooms slightly on hover. */
+.project__thumb {
+  display: block;
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.project__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.35s ease, opacity 0.35s ease;
+}
+
+.project__thumb:hover img {
+  transform: scale(1.05);
+  opacity: 0.9;
+}
+
+.project__title {
+  margin-top: 1.1rem;
+  font-weight: 500;
+  font-size: 1.5rem;
+  letter-spacing: 0.02em;
+}
+
+.project__synopsis {
+  margin-top: 0.6rem;
+  font-weight: 300;
+  font-size: 1.05rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+/* Accessible off-screen element (honeypot). */
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- Responsive: small screens ---------- */
+@media (max-width: 768px) {
+  :root {
+    --pad-x: 1.5rem;
+    --pad-y: 1.5rem;
+  }
+
+  /* Small screens use the still image (no video is downloaded here). */
+  .hero__bg {
+    background: url("assets/image.png") center center / cover no-repeat;
+  }
+
+  /* Navigation becomes a black dropdown panel below the header */
+  .nav {
+    position: absolute;
+    top: 100%; /* directly under the header, whatever its height */
+    left: 0;
+    right: 0;
+    transform: translateY(-8px);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.6rem;
+    padding: 2.25rem var(--pad-x) 2.75rem;
+    background: #000;
+    /* Closed by default */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s;
+  }
+
+  /* Small caret pointing up toward the Menu button */
+  .nav::before {
+    content: "";
+    position: absolute;
+    top: -9px;
+    right: 66px;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid #000;
+  }
+
+  .nav__link {
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    opacity: 1;
+  }
+
+  /* Open state */
+  .menu-open .nav {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .menu-toggle {
+    display: inline-flex;
+  }
+
+  /* Hamburger morphs into an X when open */
+  .menu-open .menu-toggle__icon span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+
+  .menu-open .menu-toggle__icon span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .menu-open .menu-toggle__icon span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+
+  .logo img {
+    height: 64px;
+  }
+
+  .hero__title {
+    font-size: 2rem;
+    letter-spacing: 0.03em;
+  }
+
+  .hero__subtitle {
+    margin-top: 0.9rem;
+    font-size: 0.9rem;
+    max-width: 100%;
+  }
+
+  .hero__cta {
+    margin-top: 1.75rem;
+  }
+
+  /* Language switch moves from the top bar into the hamburger menu. */
+  .lang-switch--top {
+    display: none;
+  }
+
+  .lang-switch--menu {
+    display: inline-flex;
+    margin-top: 0.75rem;
+    padding-left: 0;
+  }
+
+  /* Inner pages: tighter padding and single-column layout on phones. */
+  body.page-projects .hero__content,
+  body.page-contact .hero__content {
+    padding: 6.5rem 1.25rem 3rem;
+  }
+
+  .projects-grid {
+    margin-top: 2rem;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .projects__title,
+  .contact__title {
+    font-size: 2rem;
+  }
+
+  .project__title {
+    font-size: 1.3rem;
+  }
+
+  .contact-form {
+    margin-top: 2rem;
+  }
+}
