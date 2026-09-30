@@ -7,9 +7,12 @@
   padding: 0;
 }
 
+/* Colour theme: black text on a white background. */
 :root {
-  --white: #ffffff;
-  --muted: rgba(255, 255, 255, 0.7);
+  --bg: #ffffff;
+  --fg: #111111;
+  --muted: rgba(17, 17, 17, 0.65);
+  --hairline: rgba(17, 17, 17, 0.12);
   --pad-x: 2.5rem;
   --pad-y: 1.75rem;
 }
@@ -29,8 +32,8 @@ html {
 
 body {
   font-family: "Oswald", "Arial Narrow", sans-serif;
-  color: var(--white);
-  background: #111;
+  color: var(--fg);
+  background: var(--bg);
   -webkit-font-smoothing: antialiased;
   overflow: hidden; /* homepage fits the viewport, no scrolling */
 }
@@ -50,13 +53,13 @@ a {
 }
 
 /* Background layer.
-   On large screens the video is injected here, so we keep a plain dark colour
-   underneath (NOT the photo) to avoid a flash of the still image before the
-   video starts. The photo is used only on small screens (see media query). */
+   On large screens the homepage video is injected here, so we keep a plain
+   colour underneath (NOT the photo) to avoid a flash of the still image before
+   the video starts. The photo is used only on small screens (see media query). */
 .hero__bg {
   position: absolute;
   inset: 0;
-  background: #0d0d0d;
+  background: var(--bg);
   z-index: 0;
 }
 
@@ -76,8 +79,8 @@ a {
   opacity: 1;
 }
 
-/* Subtle darkening so text stays legible */
-.hero__overlay {
+/* Subtle darkening so text stays legible over the homepage video/photo */
+.page-home .hero__overlay {
   position: absolute;
   inset: 0;
   z-index: 1;
@@ -90,6 +93,14 @@ a {
   );
 }
 
+/* The homepage keeps white text over its dark video/photo background. */
+.page-home {
+  --bg: #0d0d0d;
+  --fg: #ffffff;
+  --muted: rgba(255, 255, 255, 0.7);
+  --hairline: rgba(255, 255, 255, 0.25);
+}
+
 /* ---------- Header ---------- */
 .header {
   position: absolute;
@@ -100,22 +111,21 @@ a {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 1rem;
   padding: var(--pad-y) var(--pad-x);
 }
 
-/* Logo */
+/* Logo (text) */
 .logo {
   display: inline-flex;
   align-items: center;
-}
-
-.logo img {
-  height: 80px;
-  width: auto;
-  display: block;
-  /* Recolor the black/gray logo to solid white so it stays visible
-     on the dark hero background (the PNG has a transparent background). */
-  filter: brightness(0) invert(1);
+  font-weight: 500;
+  /* Scales down on mid-size screens so it never runs into the centered nav */
+  font-size: clamp(1.1rem, 2vw, 1.6rem);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--fg);
 }
 
 /* Desktop navigation — centered horizontally */
@@ -132,7 +142,7 @@ a {
   font-weight: 400;
   font-size: 1.25rem;
   letter-spacing: 0.02em;
-  color: var(--white);
+  color: var(--fg);
   opacity: 0.92;
   transition: opacity 0.2s ease;
 }
@@ -149,7 +159,7 @@ a {
   gap: 0.5rem;
   background: none;
   border: none;
-  color: var(--white);
+  color: var(--fg);
   cursor: pointer;
   font-family: inherit;
   font-size: 1rem;
@@ -168,7 +178,7 @@ a {
   height: 17px;
   display: block;
   border-radius: 2px;
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.25);
+  box-shadow: 0 0 0 1px var(--hairline);
 }
 
 .lang-switch__code {
@@ -188,7 +198,7 @@ a {
   gap: 0.85rem;
   background: none;
   border: none;
-  color: var(--white);
+  color: var(--fg);
   cursor: pointer;
   font-family: inherit;
 }
@@ -211,7 +221,7 @@ a {
   display: block;
   height: 2px;
   width: 100%;
-  background: var(--white);
+  background: var(--fg);
   border-radius: 2px;
   transform-origin: center;
   transition: transform 0.25s ease, opacity 0.2s ease;
@@ -237,14 +247,6 @@ a {
   line-height: 1;
 }
 
-.hero__subtitle {
-  margin-top: 1.1rem;
-  font-weight: 300;
-  font-size: clamp(1rem, 1.8vw, 1.5rem);
-  letter-spacing: 0.02em;
-  color: var(--muted);
-}
-
 .hero__cta {
   display: inline-flex;
   align-items: center;
@@ -255,20 +257,13 @@ a {
 }
 
 .hero__cta-text {
-  border-bottom: 1px solid var(--white);
+  border-bottom: 1px solid var(--fg);
   padding-bottom: 3px;
   transition: opacity 0.2s ease;
 }
 
 .hero__cta:hover .hero__cta-text {
   opacity: 0.8;
-}
-
-/* ---------- Simple background for inner pages ---------- */
-/* Projects & Contact use a plain dark background instead of the hero image. */
-body.page-contact .hero__bg,
-body.page-projects .hero__bg {
-  background: linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 100%);
 }
 
 /* ---------- Contact page ---------- */
@@ -310,91 +305,20 @@ body.page-contact .hero__content {
   color: var(--muted);
 }
 
-.contact-form {
+.contact__email {
+  display: inline-block;
   margin-top: 2.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  text-align: left;
-}
-
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-}
-
-.field__label {
+  font-size: clamp(1.15rem, 2.2vw, 1.6rem);
   font-weight: 400;
-  font-size: 1.05rem;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-  color: var(--muted);
+  letter-spacing: 0.02em;
+  border-bottom: 1px solid var(--fg);
+  padding-bottom: 3px;
+  overflow-wrap: anywhere;
+  transition: opacity 0.2s ease;
 }
 
-.field__input {
-  font-family: inherit;
-  font-size: 1.05rem;
-  color: var(--white);
-  background: rgba(0, 0, 0, 0.35);
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  border-radius: 4px;
-  padding: 0.85rem 1rem;
-  transition: border-color 0.2s ease, background 0.2s ease;
-}
-
-.field__input::placeholder {
-  color: rgba(255, 255, 255, 0.45);
-}
-
-.field__input:focus {
-  outline: none;
-  border-color: var(--white);
-  background: rgba(0, 0, 0, 0.5);
-}
-
-.field__input--area {
-  resize: vertical;
-  min-height: 8rem;
-}
-
-.contact-form__submit {
-  align-self: flex-start;
-  font-family: inherit;
-  font-size: 1.15rem;
-  font-weight: 500;
-  letter-spacing: 0.03em;
-  color: #000;
-  background: var(--white);
-  border: 1px solid var(--white);
-  border-radius: 4px;
-  padding: 0.75rem 2.25rem;
-  cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease, opacity 0.2s ease;
-}
-
-.contact-form__submit:hover {
-  background: transparent;
-  color: var(--white);
-}
-
-.contact-form__submit[disabled] {
-  opacity: 0.55;
-  cursor: default;
-}
-
-.contact-form__status {
-  min-height: 1.4em;
-  font-size: 1rem;
-  font-weight: 300;
-}
-
-.contact-form__status--ok {
-  color: #7ee0a2;
-}
-
-.contact-form__status--error {
-  color: #ff8b8b;
+.contact__email:hover {
+  opacity: 0.8;
 }
 
 /* ---------- Projects page ---------- */
@@ -457,7 +381,7 @@ body.page-projects .hero__content {
   aspect-ratio: 16 / 9;
   overflow: hidden;
   border-radius: 6px;
-  background: rgba(0, 0, 0, 0.35);
+  background: var(--hairline);
 }
 
 .project__thumb img {
@@ -488,19 +412,6 @@ body.page-projects .hero__content {
   color: var(--muted);
 }
 
-/* Accessible off-screen element (honeypot). */
-.visually-hidden {
-  position: absolute !important;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
-
 /* ---------- Responsive: small screens ---------- */
 @media (max-width: 768px) {
   :root {
@@ -509,11 +420,11 @@ body.page-projects .hero__content {
   }
 
   /* Small screens use the still image (no video is downloaded here). */
-  .hero__bg {
+  .page-home .hero__bg {
     background: url("assets/image.png") center center / cover no-repeat;
   }
 
-  /* Navigation becomes a black dropdown panel below the header */
+  /* Navigation becomes a dropdown panel below the header */
   .nav {
     position: absolute;
     top: 100%; /* directly under the header, whatever its height */
@@ -524,7 +435,8 @@ body.page-projects .hero__content {
     align-items: flex-start;
     gap: 1.6rem;
     padding: 2.25rem var(--pad-x) 2.75rem;
-    background: #000;
+    background: var(--bg);
+    border-bottom: 1px solid var(--hairline);
     /* Closed by default */
     opacity: 0;
     visibility: hidden;
@@ -539,7 +451,7 @@ body.page-projects .hero__content {
     right: 66px;
     border-left: 10px solid transparent;
     border-right: 10px solid transparent;
-    border-bottom: 10px solid #000;
+    border-bottom: 10px solid var(--bg);
   }
 
   .nav__link {
@@ -574,19 +486,13 @@ body.page-projects .hero__content {
     transform: translateY(-7px) rotate(-45deg);
   }
 
-  .logo img {
-    height: 64px;
+  .logo {
+    font-size: clamp(1rem, 5vw, 1.25rem);
   }
 
   .hero__title {
     font-size: 2rem;
     letter-spacing: 0.03em;
-  }
-
-  .hero__subtitle {
-    margin-top: 0.9rem;
-    font-size: 0.9rem;
-    max-width: 100%;
   }
 
   .hero__cta {
@@ -623,9 +529,5 @@ body.page-projects .hero__content {
 
   .project__title {
     font-size: 1.3rem;
-  }
-
-  .contact-form {
-    margin-top: 2rem;
   }
 }

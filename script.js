@@ -1,10 +1,9 @@
 /**
- * WayPost site scripts:
+ * Maximilien Duchamp site scripts:
  *  - Load the hero background video only on large screens (mobile keeps the
  *    static CSS background image, so the heavy video is never downloaded).
  *  - Mobile hamburger menu.
  *  - EN / FR language switch (persisted in localStorage across pages).
- *  - Contact form submission via Web3Forms.
  */
 (function () {
   "use strict";
@@ -104,7 +103,7 @@
   }
 
   /* ---------- Language switch (EN / FR) ---------- */
-  var STORAGE_KEY = "waypost-lang";
+  var STORAGE_KEY = "maximilien-duchamp-lang";
 
   // Each flag SVG represents the language you switch TO. No <clipPath> ids are
   // used, so the markup is safe to inject into several buttons at once.
@@ -123,26 +122,6 @@
       '<rect y="10" width="60" height="10" fill="#fff"/>' +
       '<rect x="27" width="6" height="30" fill="#C8102E"/>' +
       '<rect y="12" width="60" height="6" fill="#C8102E"/></svg>'
-  };
-
-  // Bilingual status messages for the contact form.
-  var MSG = {
-    en: {
-      notConnected:
-        "This form isn't connected yet — add your Web3Forms access key in contact.html.",
-      sending: "Sending…",
-      ok: "Thanks — your message has been sent. We'll be in touch.",
-      error: "Something went wrong. Please try again.",
-      network: "Network error. Please check your connection and try again."
-    },
-    fr: {
-      notConnected:
-        "Ce formulaire n'est pas encore connecté — ajoutez votre clé d'accès Web3Forms dans contact.html.",
-      sending: "Envoi…",
-      ok: "Merci — votre message a bien été envoyé. Nous vous recontacterons.",
-      error: "Une erreur s'est produite. Veuillez réessayer.",
-      network: "Erreur réseau. Vérifiez votre connexion et réessayez."
-    }
   };
 
   var current = "en";
@@ -196,59 +175,4 @@
 
   // Apply the saved / default language on load.
   applyLang(current);
-
-  /* ---------- Contact form (contact.html only) ---------- */
-  var form = document.getElementById("contact-form");
-  if (form) {
-    var status = form.querySelector(".contact-form__status");
-    var submitBtn = form.querySelector(".contact-form__submit");
-    var keyField = form.querySelector('[name="access_key"]');
-
-    function setStatus(msg, type) {
-      status.textContent = msg;
-      status.className =
-        "contact-form__status" + (type ? " contact-form__status--" + type : "");
-    }
-
-    form.addEventListener("submit", function (e) {
-      e.preventDefault();
-
-      // Guard against submitting before the Web3Forms key has been set up.
-      if (!keyField || !keyField.value || keyField.value === "YOUR_ACCESS_KEY_HERE") {
-        setStatus(MSG[current].notConnected, "error");
-        return;
-      }
-
-      var data = {};
-      new FormData(form).forEach(function (value, key) {
-        data[key] = value;
-      });
-
-      setStatus(MSG[current].sending, "");
-      submitBtn.disabled = true;
-
-      fetch("https://api.web3forms.com/submit", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify(data)
-      })
-        .then(function (res) {
-          return res.json();
-        })
-        .then(function (json) {
-          if (json.success) {
-            form.reset();
-            setStatus(MSG[current].ok, "ok");
-          } else {
-            setStatus(MSG[current].error, "error");
-          }
-        })
-        .catch(function () {
-          setStatus(MSG[current].network, "error");
-        })
-        .then(function () {
-          submitBtn.disabled = false;
-        });
-    });
-  }
 })();
